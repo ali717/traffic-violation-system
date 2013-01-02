@@ -1,0 +1,478 @@
+/*
+Traffic Violation System:
+This system tracks car traffic violation tickets, the data in this system includes: car plate number, date of 
+violation, violation type, fine, status. The following table shows examples of such records 
+
+Made by Ali Faris Abdullah.
+*/
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+using namespace std;
+
+// Below are the Global variables :
+const int siz=1000; // Size of the arrays 
+int platen[siz],ticketn[siz],i=0; // Declaring 3 arrays integers: platen[siz] is the plate number, ticketn[siz] is the ticket number and i is a counter for data
+float fine[siz]; // Declaring the fine as float 
+string vtype[siz];// Declaring the violation type as string
+bool paidor[siz];// Declaring a boolian to determine wheather its paid or not
+
+// Function Prototype:
+void infout(); //Display Menue.
+void addticket(); //Add a new ticket. 1
+void deletet(); //Delete a ticket. 2
+void payt(); //Pay a ticket. 3
+void dispall(); //Display all violations tickets. 4 
+void search(); //Search for tickets by car plate no. 5
+void notpaid(); //Display all tickets that are not paid yet. 6 
+void totunpaid(); //Display the total of all unpaid tickets. 7
+void exitp(); //Exit. 8
+
+int main()
+{
+	cout<<"<<Welcom to traffic violation system ver 0.1>>";
+	cout<<endl<<"__________________________________"<<endl<<endl;
+	cout<<"WARNING: Please make sure you exit properly to prevent loosing data"<<endl;
+
+
+	
+	//Reaching the file
+	fstream fileisthere ("tvs.txt");
+	 if (fileisthere.is_open())
+		{ cout<<"Loading Please wait...."<<endl<<endl;
+	 
+	 
+	 //Getting data from file
+          while (!fileisthere.eof())
+		  {
+			  
+		fileisthere>>platen[i]>>ticketn[i];
+		getline(fileisthere,vtype[i]);
+		fileisthere>>fine[i]>>paidor[i];
+		  i++;		  
+		  		   
+		  }
+		  fileisthere.close();	//closing file
+	 
+	 i--;
+
+	 if(fine[0]==0)
+			  i=0;
+	    }
+		
+	 else
+	 {
+		 //Creating new file if not opened
+		ofstream savingdata ("tvs.txt");
+		 
+		 savingdata.close();
+		 
+		
+		 cout<<"Succesfully Created File to disk..."<<endl<<endl;
+	  fileisthere.close();
+
+		
+		 
+		 
+	 }
+
+		 
+	 
+    infout(); //calling menue function
+	
+	
+
+
+
+}
+
+void infout() // defining menue function
+{
+	cout<<"Welcome To The Main Menue:"<<endl<<endl;
+
+	cout<<"1- Add a new ticket."<<endl;
+	cout<<"2- Delete a ticket."<<endl;
+	cout<<"3- Pay a ticket."<<endl;
+	cout<<"4- Display all violations tickets. "<<endl;
+	cout<<"5- Search for tickets by car plate no."<<endl;
+	cout<<"6- Display all tickets that are not paid yet. "<<endl;
+	cout<<"7- Display the total of all unpaid tickets."<<endl;
+	cout<<"8- Exit and Save. "<<endl;
+	cout<<"Please Choose a Number from list: ";
+
+	int menue; // declaring a charecter to get the choice from user
+	cin>>menue;
+	
+	//switch case to get menue from user
+	//calling each function to its own job
+	switch(menue)
+	{
+	case 1: addticket(); 
+		infout(); 
+		
+		break;
+	case 2: deletet();
+		break;
+	case 3: payt(); 
+		break;
+	case 4: dispall();
+		break;
+	case 5: search();
+		break;
+	case 6: notpaid();
+		break;
+	case 7: totunpaid();
+		break;
+	case 8: 
+		exitp();
+		
+		//if user enter an invalid number 
+	default : cout<<"Please Enter a valid number from the menue: ";
+		      infout();
+	}
+	
+}
+
+void addticket() //Add a ticket function
+{
+	cout<<"Enter The Plate Number: ";
+	cin>>platen[i];
+
+	cout<<"Enter The Ticket Number: ";
+	cin>>ticketn[i];
+
+	//Validating the input (ticket number should not exict)
+	for(int c=0;c<i;c++)
+	{	
+		while(ticketn[i]==ticketn[c])
+	{
+		cout<<"Ticket number already exist try again, or type -1 to go to main menue: ";
+	cin>>ticketn[i];
+	
+	}
+
+	}
+	//-1 to go to main menue
+		if(ticketn[i]==-1)
+		{
+			platen[i]=0;
+			ticketn[i]=0;
+			infout();
+		}
+
+
+	cout<<"Enter The violation Type: ";
+	  
+	cin.ignore();
+	getline (cin,vtype[i]);
+	
+	cout<<"Enter The Fine: ";
+	cin>>fine[i];
+	cout<<endl<<"Tickets where added Succesfully....."<<endl<<endl;
+	
+	
+	i++; //incrimenting i to count the number of data
+	
+	
+	
+}
+
+void deletet() // deleting an unpaid ticket function
+{
+	int i2; // a counter for the for loop 
+	int del; // a counter for the for loop 
+	int che=0; // to make c work in both for loop
+	int r=0; // to make sure compiler did not go through the first if statement
+	int platecheck; // patecheck is to check if plate number from user is the same as platen[c].
+	int ticketcheck; //ticketcheck is to check if plate number from user is the same as ticketn[c].
+	
+	cout<<"Please Enter the plate Number you want to delete: ";
+	cin>>platecheck;
+	cout<<endl;
+
+	//Looping i times
+	for(int c=0;c<i;c++)
+	{
+		// only if plate number from user = plate number already exist.
+		if(platen[c]==platecheck)
+		     if(paidor[c]==false)
+			 {
+				 cout<<"For plate N. :"<<platen[c]<<" These are not paid: "<<endl;
+		         cout<<"Ticket N.="<<ticketn[c]<<",Violation is ("<<vtype[c]<<") and fine= "<<fine[c]<<endl<<endl;
+		         r++;
+
+			 }
+			 
+			 che=c;
+				
+
+	}
+	//If did not go through the first if statement there are no unpiad ticket.
+	 if(r==0&&platen[che]==platecheck)
+			    { cout<<"This car has no unpaid ticket."<<endl<<endl;
+		infout();
+		}
+
+	 //If it did go through the fisrt if statement
+	if(r!=0)
+	{
+
+		cout<<"Enter ticket number to be deleted: ";
+		cin>>ticketcheck;
+		cout<<endl;
+
+	for(int c=0;c<i;c++)// for loop for swapping data to delete an array
+	{
+		if(ticketn[c]==ticketcheck&&platecheck==platen[c]) //
+			{
+
+		i2=i; //Duplicating i value to use it 2 times
+		i2--; //Decrementing i2 to swwap data i-1 times
+		del=c; //duplicating c to use it twice
+		del++; //incrementing del to swap data from c+1
+		
+		// Swapping arras i-1 times
+		for(int l=c;c<i2;c++)
+		{
+			platen[l]=platen[del];
+		ticketn[l]=ticketn[del];
+		vtype[l]=vtype[del];
+		fine[l]=fine[del];
+		paidor[l]=paidor[del];
+		del++;
+		}
+
+		i--;
+
+		
+		cout<<"Deleted Succesfully...."<<endl<<endl;
+		infout();
+		}
+		
+
+		
+	}
+	
+	cout<<"Ticket does not belong to this car"<<endl<<endl;
+		infout();
+	
+		}
+
+
+
+
+
+
+
+
+	cout<<"Plate N. not valid"<<endl<<endl;
+	infout();
+
+
+
+
+
+}
+
+void payt() // function to pay an unpaid ticket.
+{
+	
+	int che=0; // to use c in both for loop
+	int r=0; //to track the first if statement
+	int platecheck; // grtting platecheck from user and check if its equal to platen[c]
+	int ticketcheck; // to make sure ticket number belongs to the plate number
+
+	cout<<"Please Enter the plate Number you want to pay: ";
+	cin>>platecheck;
+	cout<<endl;
+
+	// loop for output of the unpaid ticket
+	for(int c=0;c<i;c++)
+	{
+		if(platen[c]==platecheck)
+		     if(paidor[c]==false)
+			 {
+				 cout<<"for plate number "<<platen[c]<<" these are not paid: "<<endl;
+		         cout<<"Ticket N.="<<ticketn[c]<<" Violation is "<<vtype[c]<<" and fine= "<<fine[c]<<endl;
+		         r++;
+
+			 }
+			 
+			      che=c; // duplicating c 
+				
+
+	 }
+	//if r=0 means the compiler did not go through the fisrt if statement
+	 if(r==0&&platen[che]==platecheck)
+			    {
+					cout<<"this car has no unpaid ticket"<<endl;
+	            	infout();
+	        	}
+
+	 // if there are paid ticket (First if statement was excuted
+	 if(r!=0)
+	{
+
+		cout<<"Enter ticket number to be payed: ";
+		cin>>ticketcheck;
+		cout<<endl;
+
+	for(int c=0;c<i;c++)
+	{
+		if(ticketn[c]==ticketcheck&&platecheck==platen[c])
+			{
+				paidor[c]=true;
+				cout<<"Payed Succesfully..."<<endl<<endl;
+				infout();
+		    }
+				
+	}
+	
+	    cout<<"Ticket does not belong to this car."<<endl<<endl;
+		infout();
+
+
+	}
+
+
+	 
+	 // if plate number entered by user does not exist
+	cout<<"Plate N. not valid"<<endl<<endl;
+	infout();
+
+
+
+
+}
+
+void dispall() //Function to display all data
+{
+	int v=1; // counting variable
+	string pon; // string for phrases "Paid" or "Not paid
+	cout<<"Plate N."<<setw(15)<<"Ticket N."<<setw(15)<<"Violation Type"<<setw(15)<<"Fine"<<setw(15)<<"Paid Or Not"<<endl<<endl;
+
+	// outputting all arrays
+	for(int c=0;c<i;c++)
+
+	{	
+		if(paidor[c]==true)
+			pon="Paid";
+		else
+			pon="Not Paid";
+
+		
+		cout<<v<<"."<<platen[c]<<setw(15)<<ticketn[c]<<setw(15)<<vtype[c]<<setw(15)<<fine[c]<<setw(15)<<pon<<endl;
+		v++; // incrimenting the counter
+	}
+
+
+	infout();
+	}
+
+
+
+void search() // function to search for a ticket by plate number
+{
+	int f=0; // to check whether compiler did go through the first if statement ot not. 
+	int v=1; // counter for output data
+	string pom; // string for phrases "Paid" or "Not paid
+	int platecheck; // getting plate number from user and check if it exist
+
+	cout<<"Please Enter Plate N. :";
+	cin>>platecheck;
+	cout<<endl;
+	
+	//looping i times
+	for(int c=0;c<i;c++)
+	{
+		//only if plate number form user exist
+		if(platecheck==platen[c])
+			{
+				if(paidor[c]==true)
+					pom="Paid";
+				else
+					pom="Not Paid";
+						
+				
+	            cout<<v<<". "<<"ticket N.= "<<ticketn[c]<<"violation type is "<<vtype[c]<<", Fine ="<<fine[c]<<"and it is "<<pom<<endl;
+	            v++;
+	            f++;
+	    	}
+	  	
+		
+	}
+
+	//if compiler did not go through the if stataement above
+	if(f==0)
+	{
+	cout<<"Plate N. Not Valid"<<endl;
+			infout();
+	}
+
+	infout();
+}
+
+void notpaid()
+{
+	int j=0; // to check if the first statement is true
+	int v=1; // counter for outputs
+
+	//looping i times
+	for(int c=0;c<i;c++)
+
+		//only if bool paidor[c] is false (unpaid)
+		if(paidor[c]==false)
+	{
+		cout<<v<<". "<<"Plate N.="<<platen[c]<<", Ticket N.="<<ticketn[c]<<", Violation type is ("<<vtype[c]<<"), and fine="<<fine[c]<<endl;
+		v++;
+		j++;
+		
+	}	
+		// if compiler did not go throgh the fisrt if statement
+		if(j==0)
+		{
+			cout<<"No Unpaid Tickets"<<endl<<endl;
+	        infout();
+		}
+
+		infout();
+}
+
+void totunpaid() // Function to sum all fine
+{ 
+	float sum=0; // initilizing sum to zero 
+    int g=0; //counting the number of fines 
+
+	//looping i times
+	for(int c=0;c<i;c++)
+		if(paidor[c]==false)
+		{
+			sum=sum+fine[c];
+			g++;
+		}
+		
+		if(g!=0)
+		{
+		cout<<"The total value of "<<g<<" unpaid tickets is "<<sum<<endl<<endl;
+		infout();
+		}
+
+		cout<<"There are no unpaid Tickets"<<endl<<endl;
+		infout();
+
+}
+
+void exitp() // Function to exit and save data to file.
+{
+	
+	ofstream fileisthere ("tvs.txt"); //Opening the file
+	
+	if (fileisthere.is_open())
+	for(int c=0;c<i;c++)
+	   fileisthere<<platen[c]<<" "<<ticketn[c]<<" "<<vtype[c]<<endl<<fine[c]<<" "<<paidor[c]<<endl; // output data to file
+	   fileisthere.close(); // Closing file
+	   exit(1); // exit the program
+		
+}
